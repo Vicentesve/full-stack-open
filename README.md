@@ -21,16 +21,16 @@ The technologies used in this course include:
 The Full Stack Open course consists of several parts:
 
 - [x] **Part 0**: Fundamentals of Web Apps
-- [x] **Part 1**: Introduction to React
-- [x] **Part 2**: Communicating with server
-- [x] **Part 3**: Programming a server with NodeJS and Express
-- [x] **Part 4**: Testing Express servers, user administration
-- [x] **Part 5**: Testing React apps
-- [x] **Part 6**: State management with Redux
-- [x] **Part 7**: React router, custom hooks, styling app with CSS and webpack
-- [x] **Part 8**: GraphQL
-- [x] **Part 9**: TypeScript
-- [x] **Part 10**: React Native
-- [x] **Part 11**: CI/CD
-- [x] **Part 12**: Containers
-- [x] **Part 13**: Using relational dtabases
+- [ ] **Part 1**: Introduction to React
+- [ ] **Part 2**: Communicating with server
+- [ ] **Part 3**: Programming a server with NodeJS and Express
+- [ ] **Part 4**: Testing Express servers, user administration
+- [ ] **Part 5**: Testing React apps
+- [ ] **Part 6**: State management with Redux
+- [ ] **Part 7**: React router, custom hooks, styling app with CSS and webpack
+- [ ] **Part 8**: GraphQL
+- [ ] **Part 9**: TypeScript
+- [ ] **Part 10**: React Native
+- [ ] **Part 11**: CI/CD
+- [ ] **Part 12**: Containers
+- [ ] **Part 13**: Using relational dtabases
