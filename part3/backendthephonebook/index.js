@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const app = express()
 
+app.use(express.static('dist'))
 // Define a custom token that logs the request body
 morgan.token('req-body', (req, res) => JSON.stringify(req.body))
 
