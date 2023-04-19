@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
@@ -9,6 +10,7 @@ morgan.token('req-body', (req, res) => JSON.stringify(req.body))
 app.use(express.json())
 // Configure Morgan to log HTTP requests and responses, including the request body
 app.use(morgan(':method :url :status :response-time ms :req-body'))
+app.use(cors())
 
 let persons = [
   {
@@ -40,11 +42,6 @@ let persons = [
     name: 'Sebastian',
     number: '40394-324324324',
     id: 6
-  },
-  {
-    name: 'Camila',
-    number: '99-32432-4242',
-    id: 7
   }
 ]
 
