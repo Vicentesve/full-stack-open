@@ -1,10 +1,15 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+require('dotenv').config()
+const connectDB = require('./db')
+const Note = require('./models/Note.model')
 
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(cors())
+
+connectDB()
 
 let notes = [
   {
@@ -27,12 +32,10 @@ let notes = [
   }
 ]
 
-/* app.get('/', (request, response) => {
-  response.send('<h1>Hello World! :D</h1>')
-})
- */
 app.get('/api/notes', (request, response) => {
-  response.json(notes)
+  Note.find({}).then((notes) => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
