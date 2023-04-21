@@ -47,6 +47,7 @@ const App = () => {
       personService
         .updatePhoneNumber(indexPersonExist.id, personObject)
         .then((personUpdated) => {
+          console.log(personUpdated)
           setPersons(
             persons.map((person) =>
               person.id !== indexPersonExist.id ? person : personUpdated

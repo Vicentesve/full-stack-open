@@ -1,15 +1,26 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const connectDB = require('./db')
+const Person = require('./models/Person.model')
+const { default: mongoose } = require('mongoose')
 
+// Unknowpoint function
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// Init app
 const app = express()
 
-app.use(express.static('dist'))
-// Define a custom token that logs the request body
-morgan.token('req-body', (req, res) => JSON.stringify(req.body))
+// Databse
+connectDB()
 
+// Middlewares
+app.use(express.static('dist'))
+morgan.token('req-body', (req, res) => JSON.stringify(req.body))
 app.use(express.json())
-// Configure Morgan to log HTTP requests and responses, including the request body
 app.use(morgan(':method :url :status :response-time ms :req-body'))
 app.use(cors())
 
@@ -47,39 +58,63 @@ let persons = [
 ]
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find().then((persons) => {
+    res.json(persons)
+  })
 })
 
 app.get('/info', (req, res) => {
   const currentDate = new Date().toUTCString()
-  res.send(
-    `<div><p>Phonebook has info for ${persons.length} people</p><p>${currentDate}</p></div>`
-  )
+
+  Person.countDocuments({})
+    .then((count) => {
+      res.send(
+        `<div><p>Phonebook has info for ${count} people</p><p>${currentDate}</p></div>`
+      )
+    })
+    .catch((error) => {
+      console.log(error)
+      res.status(500).send('Internal Server Error')
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
+  try {
+    const id = new mongoose.Types.ObjectId(req.params.id)
 
-  const person = persons.find((person) => person.id === id)
-
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
+    Person.findById(id)
+      .then((person) => res.json(person))
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch (error) {
+    console.log(error)
+    res.json({ message: 'Invalid ID' })
   }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find((person) => person.id === id)
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndDelete(req.params.id)
+    .then((result) => {
+      console.log(result)
+      res.status(204).end()
+    })
+    .catch((error) => next(error))
+})
 
-  if (person) {
-    persons = persons.filter((note) => note.id !== id)
-    console.log(persons)
-    res.status(204).end()
-  } else {
-    res.status(404).end()
+app.put('/api/persons/:id', (req, res, next) => {
+  const { name, number } = req.body
+
+  const person = {
+    name: name,
+    number: number
   }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      res.status(200).json(updatedPerson)
+    })
+    .catch((error) => next(error))
 })
 
 const generateRamdomID = () => {
@@ -92,19 +127,29 @@ app.post('/api/persons', (req, res) => {
   if (!name) return res.json({ error: 'missing name' })
   if (!number) return res.json({ error: 'missing number' })
 
-  const checkNumber = persons.some((person) => person.name === name)
-  if (checkNumber) return res.json({ error: 'name must be unique' })
-
-  const person = {
-    id: generateRamdomID(),
-    name,
-    number
-  }
-
-  persons = persons.concat(person)
-
-  res.json(person)
+  Person.findOne({ name: name }).then((person) => {
+    if (person) {
+      res.json({ error: 'name must be unique' })
+    } else {
+      const person = new Person({
+        name,
+        number
+      })
+      persons = persons.concat(person)
+      person
+        .save()
+        .then((result) => {
+          res.json(result)
+        })
+        .catch((error) => {
+          console.log(error)
+          res.json({ error: 'Internal server error' })
+        })
+    }
+  })
 })
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
