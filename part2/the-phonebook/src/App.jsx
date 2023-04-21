@@ -47,7 +47,6 @@ const App = () => {
       personService
         .updatePhoneNumber(indexPersonExist.id, personObject)
         .then((personUpdated) => {
-          console.log(personUpdated)
           setPersons(
             persons.map((person) =>
               person.id !== indexPersonExist.id ? person : personUpdated
@@ -58,12 +57,18 @@ const App = () => {
           setNewNumber('')
         })
     } else {
-      personService.createNewPerson(personObject).then((personCreated) => {
-        setPersons(persons.concat(personCreated))
-        handleNotification(`Added ${personCreated.name}`)
-        setNewName('')
-        setNewNumber('')
-      })
+      personService
+        .createNewPerson(personObject)
+        .then((personCreated) => {
+          setPersons(persons.concat(personCreated))
+          handleNotification(`Added ${personCreated.name}`)
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch((error) => {
+          const { name, number } = error.response.data
+          handleNotification(`${name ?? ''}\n${number ?? ''}`)
+        })
     }
   }
 

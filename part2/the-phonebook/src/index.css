@@ -49,6 +49,7 @@ input {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+  white-space: pre-line;
 }
 
 .success {

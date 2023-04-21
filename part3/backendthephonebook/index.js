@@ -11,6 +11,21 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
+const errorHandler = (error, req, res, next) => {
+  if (error.name === 'BSONError') {
+    return res.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    const errors = {}
+    for (const field in error.errors) {
+      errors[field] = error.errors[field].message
+    }
+    return res.status(400).json(errors)
+  } else if (error.name === 'MongoServerError') {
+    return res.status(400).json({ name: 'Name must be unique' })
+  }
+  next(error)
+}
+
 // Init app
 const app = express()
 
@@ -117,38 +132,21 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch((error) => next(error))
 })
 
+app.post('/api/persons', (req, res, next) => {
+  const { name, number } = req.body
+
+  Person.create({ name, number })
+    .then((result) => {
+      res.status(200).json(result)
+    })
+    .catch((error) => next(error))
+})
+
 const generateRamdomID = () => {
   return Math.floor(Math.random() * 10000)
 }
 
-app.post('/api/persons', (req, res) => {
-  const { name, number } = req.body
-
-  if (!name) return res.json({ error: 'missing name' })
-  if (!number) return res.json({ error: 'missing number' })
-
-  Person.findOne({ name: name }).then((person) => {
-    if (person) {
-      res.json({ error: 'name must be unique' })
-    } else {
-      const person = new Person({
-        name,
-        number
-      })
-      persons = persons.concat(person)
-      person
-        .save()
-        .then((result) => {
-          res.json(result)
-        })
-        .catch((error) => {
-          console.log(error)
-          res.json({ error: 'Internal server error' })
-        })
-    }
-  })
-})
-
+app.use(errorHandler)
 app.use(unknownEndpoint)
 
 const PORT = 3001
