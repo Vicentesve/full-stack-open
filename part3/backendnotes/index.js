@@ -8,10 +8,6 @@ const Note = require('./models/Note.model')
 const app = express()
 
 const errorHandler = (err, req, res, next) => {
-  /* console.log(err.message) */
-
-  console.log(err.name)
-
   if (err.name === 'BSONError') {
     return res.status(400).send({ error: 'malformatted id' })
   } else if (err.name === 'ValidationError') {
@@ -107,29 +103,3 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
-/* let notes = [
-  {
-    id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true
-  },
-  {
-    id: 2,
-    content: 'Browser can execute only Javascript',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false
-  },
-  {
-    id: 3,
-    content: 'GET and POST are the most important methods of HTTP protocol',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true
-  }
-] */
-
-/* const generateId = () => {
-      const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0
-      return maxId + 1
-    } */

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "lint": "eslint .",
     "build:ui": "cd ../../part2/notes && npm run build && xcopy dist ..\\..\\part3\\backendnotes\\frontend /s /e /i /h /k /y",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
@@ -18,6 +19,11 @@
     "mongoose": "^7.0.4"
   },
   "devDependencies": {
+    "eslint": "^8.39.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^2.0.22"
   }
 }
